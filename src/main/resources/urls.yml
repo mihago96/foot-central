@@ -1,0 +1,6 @@
+championships:
+  premier_league: http://localhost:8080
+  la_liga: http://localhost:8082
+  bundesliga: http://localhost:8083
+  seria: http://localhost:8084
+  ligue_1: http://localhost:8085
