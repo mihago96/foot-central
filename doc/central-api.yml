@@ -1,0 +1,212 @@
+openapi: 3.1.0
+info:
+  title: Football championship Central API
+  description: Note that this API retrieves data for all seasons but not distinct season by year as inside each football championship api.
+  version: 1.0.0
+servers:
+  - url: https://localhost:8081
+paths:
+  /syncrhonization:
+    post:
+      summary: Synchronize data from all football-championship-api.
+      responses:
+        '200':
+          description: >
+            Synchronized data from all football championships APIs (plural).
+
+            When data is retrieved from other APIs, 
+
+            central API must update needed data used to provide GET /bestPlayers, GET /bestClubs and GET /championshipRankings. 
+
+            Data must be stored inside central API, by just updating values
+            without getting historic.
+  /bestPlayers:
+    get:
+      tags:
+        - Player
+      summary: Get best players from all championship
+      description: |
+        Best player is determined by the most scored goals first.
+        If some players have same scored goals number, so we must compare the playing time of them, 
+        and the player with most playing time is the top.
+      parameters:
+        - in: query
+          name: top
+          schema:
+            type: integer
+          description: >
+            Default is 5.
+
+            For example, if top=10, return the 10 best players from all championship
+          required: false
+        - in: query
+          name: playingTimeUnit
+          schema:
+            $ref: '#/components/schemas/DurationUnit'
+          required: true
+      responses:
+        '200':
+          description: >-
+            List of best players from all championships order by the best player
+            first
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PlayerRanking'
+  /bestClubs:
+    get:
+      tags:
+        - Club
+      summary: Get best clubs from all championship
+      parameters:
+        - in: query
+          name: top
+          schema:
+            type: integer
+          description: >
+            Default is 5.
+
+            For example, if top=10, return the 10 best clubs from all
+            championship
+          required: false
+      responses:
+        '200':
+          description: >-
+            List of best clubs from all championships order by the best player
+            first
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ClubRanking'
+  /championshipRankings:
+    get:
+      tags:
+        - Championship
+      summary: Get championships ranking
+      description: >
+        The championship that has the least median of total difference goals
+        between all clubs is the best championship,
+
+        and the championship that as the grater median of total difference goals
+        is the worst.
+
+        The lower the median, the closer the matches and the better the level of
+        the clubs.
+
+        The greater the median, the greater the gap between clubs.
+      responses:
+        '200':
+          description: Rank of championships
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChampionshipRanking'
+components:
+  schemas:
+    Championship:
+      type: string
+      enum:
+        - PREMIER_LEAGUE
+        - LA_LIGA
+        - BUNDESLIGA
+        - SERIA
+        - LIGUE_1
+    ChampionshipRanking:
+      type: object
+      properties:
+        rank:
+          type: integer
+        championship:
+          $ref: '#/components/schemas/Championship'
+        differenceGoalsMedian:
+          type: number
+    PlayerRanking:
+      type: object
+      properties:
+        rank:
+          type: integer
+        id:
+          type: string
+        name:
+          type: string
+        number:
+          type: integer
+        position:
+          $ref: '#/components/schemas/PlayerPosition'
+        nationality:
+          type: string
+        age:
+          type: integer
+        championship:
+          $ref: '#/components/schemas/Championship'
+        scoredGoals:
+          type: integer
+        playingTime:
+          $ref: '#/components/schemas/PlayingTime'
+    PlayingTime:
+      type: object
+      properties:
+        value:
+          type: number
+        durationUnit:
+          $ref: '#/components/schemas/DurationUnit'
+    DurationUnit:
+      type: string
+      enum:
+        - SECOND
+        - MINUTE
+        - HOUR
+    PlayerPosition:
+      type: string
+      enum:
+        - STRIKER
+        - MIDFIELDER
+        - DEFENSE
+        - GOAL_KEEPER
+    Coach:
+      type: object
+      properties:
+        name:
+          type: string
+        nationality:
+          type: string
+    Club:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Club identifier
+        name:
+          type: string
+        acronym:
+          type: string
+          description: Three letters describing the club (not-unique)
+          example: RMA
+        yearCreation:
+          type: integer
+        stadium:
+          type: string
+        coach:
+          $ref: '#/components/schemas/Coach'
+    ClubRanking:
+      type: object
+      properties:
+        rank:
+          type: integer
+        club:
+          $ref: '#/components/schemas/Club'
+        rankingPoints:
+          type: integer
+        scoredGoals:
+          type: integer
+        concededGoals:
+          type: integer
+        differenceGoals:
+          type: integer
+          description: Scored goals minus conceded goals, can be negative.
+        cleanSheetNumber:
+          type: integer
