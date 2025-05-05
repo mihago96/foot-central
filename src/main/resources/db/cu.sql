@@ -1,0 +1,13 @@
+\c postgres
+DROP DATABASE central;
+DROP ROLE central;
+CREATE DATABASE central;
+CREATE ROLE central LOGIN PASSWORD 'fifa';
+
+\c central;
+
+GRANT SELECT , INSERT ON ALL TABLES IN SCHEMA public TO central;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT , INSERT, UPDATE, DELETE ON TABLES TO central;
+
+GRANT CREATE ON SCHEMA public to central;
+
