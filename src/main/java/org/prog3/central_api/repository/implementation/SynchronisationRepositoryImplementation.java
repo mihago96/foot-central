@@ -111,7 +111,7 @@ public class SynchronisationRepositoryImplementation implements SynchronisationR
         if (players == null) return;
 
         String insertPlayerSql = """
-            INSERT INTO players (
+            INSERT INTO players ( 
                 id, name, number, position, nationality, age,
                 championship, scored_goals, playing_time_value, playing_time_unit
             ) VALUES (

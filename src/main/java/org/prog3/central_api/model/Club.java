@@ -12,4 +12,5 @@ public class Club implements Serializable {
     private Integer yearCreation;
     private String stadium;
     private Coach coach;
+    private ChampionShip championShip;
 }
