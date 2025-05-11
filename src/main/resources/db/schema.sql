@@ -68,3 +68,16 @@ CREATE TABLE clubs (
 
 -- Index pour le classement des clubs
 CREATE INDEX idx_clubs_ranking ON clubs (ranking_points DESC);
+
+-- Ajout d'une table pour les saisons
+CREATE TABLE seasons (
+    year INTEGER PRIMARY KEY,
+    championship championship_enum,
+    status VARCHAR
+);
+
+-- Modification de la table players pour inclure l'année de saison
+ALTER TABLE players ADD COLUMN season_year INTEGER REFERENCES seasons(year);
+
+-- Modification de la table clubs pour inclure l'année de saison
+ALTER TABLE clubs ADD COLUMN season_year INTEGER REFERENCES seasons(year);
