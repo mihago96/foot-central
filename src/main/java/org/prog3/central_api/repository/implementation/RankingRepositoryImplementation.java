@@ -172,10 +172,58 @@ public class RankingRepositoryImplementation implements RankingRepository {
     }
 
     /**
-     * @return
+     * Récupère le classement des championnats.
+     * Le meilleur championnat est celui qui a la médiane la plus basse de différence de buts,
+     * indiquant des matchs plus serrés et un meilleur niveau général.
+     * @return Liste des championnats classés du meilleur au pire
      */
     @Override
     public List<ChampionShipRanking> getBestChampionship() {
-        return List.of();
+        String query = """
+            WITH championship_diff_goals AS (
+                SELECT 
+                    championship,
+                    ABS(scored_goals - conceded_goals) as diff_goals
+                FROM clubs
+            ),
+            championship_stats AS (
+                SELECT 
+                    championship,
+                    PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY diff_goals) as median_diff_goals
+                FROM championship_diff_goals
+                GROUP BY championship
+            ),
+            ranked_championships AS (
+                SELECT 
+                    championship::championship_enum as championship,
+                    median_diff_goals as difference_goals_median,
+                    ROW_NUMBER() OVER (ORDER BY median_diff_goals ASC) as rank
+                FROM championship_stats
+            )
+            SELECT *
+            FROM ranked_championships
+            ORDER BY rank;
+        """;
+    
+        List<ChampionShipRanking> rankings = new ArrayList<>();
+    
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(query)) {
+    
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    ChampionShipRanking ranking = new ChampionShipRanking();
+                    ranking.setRanking(rs.getInt("rank"));
+                    ranking.setChampionShip(ChampionShip.valueOf(rs.getString("championship")));
+                    ranking.setDifferenceGoalMedian((int) rs.getDouble("difference_goals_median"));
+                    
+                    rankings.add(ranking);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error while fetching championship rankings", e);
+        }
+    
+        return rankings;
     }
 }
