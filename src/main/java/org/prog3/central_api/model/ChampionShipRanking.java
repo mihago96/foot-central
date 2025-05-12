@@ -6,5 +6,5 @@ import lombok.Data;
 public class ChampionShipRanking {
     private Integer ranking;
     private ChampionShip championShip;
-    private Integer differenceGoalMedian;
+    private Double differenceGoalMedian;
 }

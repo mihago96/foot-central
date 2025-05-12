@@ -28,8 +28,8 @@ public class SynchronisationRepositoryImplementation implements SynchronisationR
     private final RestTemplate restTemplate;
 
     private static final List<ChampUrl> CHAMP_URLS = Arrays.asList(
-            new ChampUrl(ChampionShip.LA_LIGA, 8081)
-//            new ChampUrl(ChampionShip.BUNDESLIGA, 8082),
+            new ChampUrl(ChampionShip.LA_LIGA, 8081),
+           new ChampUrl(ChampionShip.BUNDESLIGA, 8082)
 //            new ChampUrl(ChampionShip.LIGUE_1, 8083),
 //            new ChampUrl(ChampionShip.PREMIER_LEAGUE, 8084),
 //            new ChampUrl(ChampionShip.SERIA, 8085)

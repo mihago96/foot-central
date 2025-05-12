@@ -1,6 +1,7 @@
 package org.prog3.central_api.service;
 
 import lombok.AllArgsConstructor;
+import org.prog3.central_api.model.ChampionShipRanking;
 import org.prog3.central_api.model.ClubRanking;
 import org.prog3.central_api.model.DurationUnit;
 import org.prog3.central_api.model.PlayerRanking;
@@ -27,4 +28,8 @@ public class RankingService {
         }
         return rankingRepository.getBestClubs(top);
     }
+    public List<ChampionShipRanking> getBestChampionship(){
+        return rankingRepository.getBestChampionship();
+    }
+
 }

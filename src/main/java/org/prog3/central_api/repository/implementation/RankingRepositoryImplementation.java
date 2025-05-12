@@ -190,6 +190,7 @@ public class RankingRepositoryImplementation implements RankingRepository {
                 SELECT 
                     championship,
                     PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY diff_goals) as median_diff_goals
+                    -- Using PERCENTILE_CONT to calculate the median
                 FROM championship_diff_goals
                 GROUP BY championship
             ),
@@ -215,7 +216,10 @@ public class RankingRepositoryImplementation implements RankingRepository {
                     ChampionShipRanking ranking = new ChampionShipRanking();
                     ranking.setRanking(rs.getInt("rank"));
                     ranking.setChampionShip(ChampionShip.valueOf(rs.getString("championship")));
-                    ranking.setDifferenceGoalMedian((int) rs.getDouble("difference_goals_median"));
+                    
+                    // Get the value as double without casting to int to preserve decimal precision
+                    double medianValue = rs.getDouble("difference_goals_median");
+                    ranking.setDifferenceGoalMedian(medianValue);
                     
                     rankings.add(ranking);
                 }

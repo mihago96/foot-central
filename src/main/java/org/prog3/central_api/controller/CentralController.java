@@ -64,6 +64,6 @@ public class CentralController {
      */
     @GetMapping("/championShipRanking")
     public ResponseEntity<List<ChampionShipRanking>> getChampionShipRanking() {
-        throw new UnsupportedOperationException("Not implemented yet.");
+    return ResponseEntity.ok(service.getBestChampionship());
     }
 }
